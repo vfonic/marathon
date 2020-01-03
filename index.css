@@ -28,6 +28,7 @@
 
   #external-events .fc-event {
     margin: 10px 0;
+    padding: 10px 20px;
     cursor: pointer;
   }
 
@@ -37,8 +38,9 @@
     color: #666;
   }
 
-  #external-events p input {
+  #external-events input {
     margin: 0;
+    margin-right: 6px;
     vertical-align: middle;
   }
 
@@ -46,4 +48,3 @@
     float: right;
     width: 900px;
   }
-
