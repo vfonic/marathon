@@ -11,6 +11,47 @@ new Draggable(containerEl, {
   }
 });
 
+function TasksCalendar(state, action) {
+  if (typeof state === 'undefined') { return { tasks: [] }; }
+
+  var newState = JSON.parse(JSON.stringify(state));
+
+  switch (action.type) {
+    case 'TASK_ADDED':
+      return newState;
+    case 'TASK_MOVED':
+      return newState;
+    case 'TASK_COMPLETED':
+      return newState;
+    default:
+      return state;
+  }
+}
+
+function persist(state) {
+  localStorage.setItem('TASKS_MARATHON', JSON.stringify(state))
+}
+
+function render(state) {
+  calendar.removeAllEvents()
+
+  state.tasks.forEach(task => {
+    calendar.addEvent({
+      title: task.title,
+      start: task.start,
+      end: task.end,
+      allDay: task.allDay
+    })
+
+    // <label for="for3" class='fc-event'>
+    //   <input type="checkbox" name="for3" id="for3">
+    //   <span>My Event 1</span>
+    // </label>
+  })
+}
+
+store = StateMachine(TasksCalendar);
+
 var calendarEl = document.getElementById('calendar');
 var calendar = new Calendar(calendarEl, {
   plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid', 'list' ],
@@ -26,7 +67,7 @@ var calendar = new Calendar(calendarEl, {
     listDay: { buttonText: 'list day' },
     listWeek: { buttonText: 'list week' }
   },
-  defaultView: 'listDay',
+  defaultView: 'timeGridDay',
   weekNumbers: false,
   navLinks: true, // can click day/week names to navigate views
   droppable: true, // this allows things to be dropped onto the calendar
@@ -44,11 +85,9 @@ var calendar = new Calendar(calendarEl, {
   select: function(arg) {
     var title = prompt('Task:');
     if (title) {
-      calendar.addEvent({
-        title: title,
-        start: arg.start,
-        end: arg.end,
-        allDay: arg.allDay
+      store.dispatch({
+        type: 'TASK_ADDED',
+        payload: { title, start: arg.start, end: arg.end, allDay: arg.allDay }
       })
     }
     calendar.unselect()
@@ -56,9 +95,11 @@ var calendar = new Calendar(calendarEl, {
 });
 calendar.render();
 
-// calendar.addEvent({
-//   title: title,
-//   start: arg.start,
-//   end: arg.end,
-//   allDay: arg.allDay
-// })
+var state = store.getState();
+
+store.subscribe(render);
+render(state);
+store.subscribe(persist);
+persist(state);
+
+// document.getElementById('')

@@ -48,3 +48,11 @@
     float: right;
     width: 900px;
   }
+
+[type="checkbox"] {
+  outline: none;
+}
+[type="checkbox"]:checked:after {
+  left: -0.44em;
+  top: -0.38em;
+}
