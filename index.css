@@ -56,3 +56,16 @@
   left: -0.44em;
   top: -0.38em;
 }
+
+.remove-task {
+  visibility: hidden;
+  opacity: 0;
+  color: #aaa;
+  position: absolute;
+  right: 10px;
+  transition: all 0.3s;
+}
+label:hover .remove-task {
+  visibility: visible;
+  opacity: 1;
+}

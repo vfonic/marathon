@@ -27,6 +27,7 @@ new Draggable(containerEl, {
 
 const TASK_ADDED = 'TASK_ADDED';
 const TASK_MOVED = 'TASK_MOVED';
+const TASK_REMOVED = 'TASK_REMOVED';
 const TASK_COMPLETED = 'TASK_COMPLETED';
 
 const DEFAULT_TASK_DURATION = 0.5;
@@ -80,6 +81,11 @@ function changeById(taskId, state, cb) {
   state.tasks = state.tasks.map(task => task.id === taskId ? cb(task) : task);
 }
 
+function removeTask(taskId, state) {
+  changeById(taskId, state, task => undefined);
+  state.tasks = state.tasks.filter(Boolean)
+}
+
 function moveTask(taskId, state) {
   changeById(taskId, state, task => {
     debugger;
@@ -116,6 +122,9 @@ function TasksCalendar(state, action) {
       const end = action.payload.end || start.addHours(DEFAULT_TASK_DURATION);
       const newTask = Task({ ...action.payload, start, end });
       newState.tasks.push(newTask);
+      return newState;
+    case TASK_REMOVED:
+      removeTask(action.payload, newState);
       return newState;
     case TASK_MOVED:
       moveTask(action.payload, newState);
@@ -173,6 +182,15 @@ function render(state) {
     const span = document.createElement('span');
     span.innerText = task.title;
     label.appendChild(span)
+    const i = document.createElement('i');
+    i.className = "fa fa-trash remove-task";
+    i.addEventListener('click', function() {
+      store.dispatch({
+        type: TASK_REMOVED,
+        payload: task.id
+      });
+    })
+    label.appendChild(i)
     containerEl.appendChild(label);
   })
 }
