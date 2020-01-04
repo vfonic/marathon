@@ -1,6 +1,6 @@
 /*!
 FullCalendar Core Package v4.3.1
-Docs & License: https://fullcalendar.io/
+Docs & License
 (c) 2019 Adam Shaw
 */
 
@@ -104,7 +104,7 @@ Docs & License: https://fullcalendar.io/
     }
     // Querying
     // ----------------------------------------------------------------------------------------------------------------
-    // from https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
+    // from
     var matchesMethod = Element.prototype.matches ||
         Element.prototype.matchesSelector ||
         Element.prototype.msMatchesSelector;
@@ -1005,7 +1005,6 @@ Docs & License: https://fullcalendar.io/
     // be triggered. The function will be called after it stops being called for
     // N milliseconds. If `immediate` is passed, trigger the function on the
     // leading edge, instead of the trailing.
-    // https://github.com/jashkenas/underscore/blob/1.6.0/underscore.js#L714
     function debounce(func, wait) {
         var timeout;
         var args;
@@ -1134,7 +1133,7 @@ Docs & License: https://fullcalendar.io/
     Copyright (c) Microsoft Corporation. All rights reserved.
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use
     this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    License
 
     THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
     KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
@@ -3946,11 +3945,11 @@ Docs & License: https://fullcalendar.io/
         renderEventDragSegs(state: EventSegUiInteractionState) {
           if (state) {
             let { isEvent, segs, sourceSeg } = state
-      
+
             if (this.eventRenderer) {
               this.eventRenderer.hideByHash(state.affectedInstances)
             }
-      
+
             // if the user is dragging something that is considered an event with real event data,
             // and this component likes to do drag mirrors OR the component where the seg came from
             // likes to do drag mirrors, then render a drag mirror.
@@ -3959,7 +3958,7 @@ Docs & License: https://fullcalendar.io/
                 this.mirrorRenderer.renderSegs(segs, { isDragging: true, sourceSeg })
               }
             }
-      
+
             // if it would be impossible to render a drag mirror OR this component likes to render
             // highlights, then render a highlight.
             if (!isEvent || this.doesDragHighlight) {
@@ -4406,7 +4405,7 @@ Docs & License: https://fullcalendar.io/
         var endMarker = framingRange.end;
         var instanceStarts = [];
         while (dayMarker < endMarker) {
-            var instanceStart 
+            var instanceStart
             // if everyday, or this particular day-of-week
             = void 0;
             // if everyday, or this particular day-of-week
