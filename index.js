@@ -46,7 +46,7 @@ function uuid() {
 }
 
 function changeById(taskId, state, cb) {
-  state.tasks = state.tasks.map(task => task.id !== taskId ? cb(task) : task);
+  state.tasks = state.tasks.map(task => task.id === taskId ? cb(task) : task);
 }
 
 function moveTask(taskId, state) {
@@ -59,10 +59,7 @@ function moveTask(taskId, state) {
 }
 
 function completeTask(taskId, state) {
-  changeById(taskId, state, task => {
-    debugger;
-    return task;
-  })
+  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted }))
 }
 
 function Task(props) {
@@ -72,6 +69,7 @@ function Task(props) {
 function TasksCalendar(state, action) {
   if (typeof state === 'undefined') { return initialState(); }
 
+  console.log(action.type, action);
   var newState = jsonParse(JSON.stringify(state));
 
   switch (action.type) {
@@ -113,11 +111,18 @@ function render(state) {
     //   <span>My Event 1</span>
     // </label>
     const label = document.createElement('label');
+    label.addEventListener('click', function() {
+      store.dispatch({
+        type: TASK_COMPLETED,
+        payload: task.id,
+      })
+    })
     label.htmlFor = task.id;
     label.className = 'fc-event';
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.name = task.id;
+    input.checked = task.isCompleted;
     input.id = task.id;
     label.appendChild(input);
     const span = document.createElement('span');
@@ -131,9 +136,6 @@ store = StateMachine(TasksCalendar);
 
 var calendarEl = document.getElementById('calendar');
 var calendar = new Calendar(calendarEl, {
-  eventConstraint: {
-    startTime: new Date()
-  },
   plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid', 'list' ],
   nowIndicator: true,
   themeSystem: 'bootstrap',
