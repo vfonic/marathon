@@ -29,23 +29,35 @@ const TASK_ADDED = 'TASK_ADDED';
 const TASK_MOVED = 'TASK_MOVED';
 const TASK_COMPLETED = 'TASK_COMPLETED';
 
+const DEFAULT_TASK_DURATION = 0.5;
+
+function realignStart(state) {
+  var h = 0;
+  state.tasks.forEach(task => {
+    if (task.isCompleted) { return; }
+
+    const newStart = new Date();
+    task.start = newStart.addHours(h);
+    task.end = task.start.addHours(DEFAULT_TASK_DURATION);
+    h += DEFAULT_TASK_DURATION
+  })
+}
+
 function jsonParse(string) {
   const state = JSON.parse(string);
   if (state) {
-    state.tasks = state.tasks.map(task => {
-      return {
-        ...task,
-        start: new Date(task.start),
-        end: new Date(task.end),
-      }
+    state.tasks.forEach(task => {
+      task.start = new Date(task.start)
+      task.end = new Date(task.end)
     })
   }
   return state;
 }
 
 Date.prototype.addHours = function(h) {
-  this.setTime(this.getTime() + (h*60*60*1000));
-  return this;
+  const date = new Date(this);
+  date.setTime(this.getTime() + (h*60*60*1000));
+  return date;
 }
 
 function initialState() {
@@ -53,16 +65,7 @@ function initialState() {
 
   if (!state) { return { tasks: [] }; }
 
-  var h = 0;
-  const DEFAULT_TASK_DURATION = 0.5;
-  state.tasks.forEach(task => {
-    if (task.isCompleted) { return; }
-
-    const newStart = new Date();
-    task.start = newStart.addHours(h);
-    task.end = new Date(task.start).addHours(DEFAULT_TASK_DURATION);
-    h += DEFAULT_TASK_DURATION
-  })
+  realignStart(state);
   return state;
 }
 
@@ -87,11 +90,18 @@ function moveTask(taskId, state) {
 }
 
 function completeTask(taskId, state) {
-  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted }))
+  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted, end: new Date() }))
+  realignStart(state)
 }
 
 function Task(props) {
   return { id: uuid(), isCompleted: false, ...props }
+}
+
+function firstAvailableTime(state) {
+  var latestDate = new Date();
+  state.tasks.forEach(task => latestDate = latestDate > task.end ? latestDate : task.end);
+  return latestDate;
 }
 
 function TasksCalendar(state, action) {
@@ -102,7 +112,9 @@ function TasksCalendar(state, action) {
 
   switch (action.type) {
     case TASK_ADDED:
-      const newTask = Task(action.payload);
+      const start = action.payload.start || firstAvailableTime(state);
+      const end = action.payload.end || start.addHours(DEFAULT_TASK_DURATION);
+      const newTask = Task({ ...action.payload, start, end });
       newState.tasks.push(newTask);
       return newState;
     case TASK_MOVED:
@@ -208,8 +220,9 @@ calendar.render();
 var state = store.getState();
 
 store.subscribe(render);
-render(state);
 store.subscribe(persist);
+render(state);
 persist(state);
 
-// document.getElementById('')
+const addTaskButton = document.getElementById('add-task-button');
+addTaskButton.addEventListener('click', addTask)
