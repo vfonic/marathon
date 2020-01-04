@@ -152,7 +152,8 @@ function render(state) {
         title: task.title,
         start: task.start,
         end: task.end,
-        allDay: task.allDay
+        allDay: task.allDay,
+        extendedProps: task,
       })
     }
 
@@ -232,6 +233,13 @@ var calendar = new Calendar(calendarEl, {
     addTask(arg)
     calendar.unselect()
   },
+  eventClick: function(info) {
+    const task = info.event.extendedProps;
+    store.dispatch({
+      type: TASK_COMPLETED,
+      payload: task.id,
+    })
+  }
 });
 calendar.render();
 
