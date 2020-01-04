@@ -29,6 +29,7 @@ const TASK_ADDED = 'TASK_ADDED';
 const TASK_MOVED = 'TASK_MOVED';
 const TASK_REMOVED = 'TASK_REMOVED';
 const TASK_COMPLETED = 'TASK_COMPLETED';
+const CLEAR_COMPLETED = 'CLEAR_COMPLETED';
 
 const DEFAULT_TASK_DURATION = 0.5;
 
@@ -117,6 +118,9 @@ function TasksCalendar(state, action) {
   var newState = jsonParse(JSON.stringify(state));
 
   switch (action.type) {
+    case CLEAR_COMPLETED:
+      newState.tasks = newState.tasks.filter(task => !task.isCompleted)
+      return newState;
     case TASK_ADDED:
       const start = action.payload.start || firstAvailableTime(state);
       const end = action.payload.end || start.addHours(DEFAULT_TASK_DURATION);
@@ -145,6 +149,9 @@ function render(state) {
   console.log(state);
   calendar.removeAllEvents()
   emptyElement(containerEl);
+
+  const clearCompletedTasksButton = document.getElementById('clear-completed-tasks-button');
+  clearCompletedTasksButton.style.display = state.tasks.some(task => task.isCompleted) ? 'block' : 'none';
 
   state.tasks.forEach(task => {
     if (!task.isCompleted) {
@@ -264,3 +271,8 @@ persist(state);
 
 const addTaskButton = document.getElementById('add-task-button');
 addTaskButton.addEventListener('click', addTask)
+
+const clearCompletedTasksButton = document.getElementById('clear-completed-tasks-button');
+clearCompletedTasksButton.addEventListener('click', function() {
+  store.dispatch({ type: CLEAR_COMPLETED })
+})
