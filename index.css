@@ -1,53 +1,47 @@
+body {
+  margin-top: 40px;
+}
+#wrap {
+  width: 1100px;
+  margin: 0 auto;
+}
+#external-events {
+  float: left;
+  width: 150px;
+  padding: 0 10px;
+  border: 1px solid #ccc;
+  box-shadow: 4px 4px 5px 0 #000;
+  background: #333;
+}
 
+#external-events h4 {
+  font-size: 16px;
+  margin-top: 0;
+  padding-top: 1em;
+}
 
-  body {
-    margin-top: 40px;
-    font-size: 14px;
-    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-  }
+#external-events .fc-event {
+  margin: 10px 0;
+  padding: 10px 20px;
+  cursor: pointer;
+}
 
-  #wrap {
-    width: 1100px;
-    margin: 0 auto;
-  }
+#external-events p {
+  margin: 1.5em 0;
+  font-size: 11px;
+  color: #666;
+}
 
-  #external-events {
-    float: left;
-    width: 150px;
-    padding: 0 10px;
-    border: 1px solid #ccc;
-    background: #eee;
-    text-align: left;
-  }
+#external-events input {
+  margin: 0;
+  margin-right: 6px;
+  vertical-align: middle;
+}
 
-  #external-events h4 {
-    font-size: 16px;
-    margin-top: 0;
-    padding-top: 1em;
-  }
-
-  #external-events .fc-event {
-    margin: 10px 0;
-    padding: 10px 20px;
-    cursor: pointer;
-  }
-
-  #external-events p {
-    margin: 1.5em 0;
-    font-size: 11px;
-    color: #666;
-  }
-
-  #external-events input {
-    margin: 0;
-    margin-right: 6px;
-    vertical-align: middle;
-  }
-
-  #calendar {
-    float: right;
-    width: 900px;
-  }
+#calendar {
+  float: right;
+  width: 900px;
+}
 
 [type="checkbox"] {
   outline: none;
@@ -69,3 +63,4 @@ label:hover .remove-task {
   visibility: visible;
   opacity: 1;
 }
+

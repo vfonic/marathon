@@ -198,11 +198,25 @@ function render(state) {
 
 store = StateMachine(TasksCalendar);
 
+var state = store.getState();
+var firstTask = state.tasks.sort((a,b) => a.start < b.start).find(task => !task.isCompleted)
+var firstTaskStart = firstTask ? firstTask.start : new Date();
+
+var beginningOfDay = new Date();
+beginningOfDay.setHours(0,0,0,0);
+
+firstTaskStart = firstTaskStart.addHours(-2);
+
+firstTaskStart = firstTaskStart > beginningOfDay ? firstTaskStart : beginningOfDay;
+
+var scrollTime = firstTaskStart.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).substr(0, '00:00:00'.length);
+
 var calendarEl = document.getElementById('calendar');
 var calendar = new Calendar(calendarEl, {
   plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid', 'list' ],
   nowIndicator: true,
   themeSystem: 'bootstrap',
+  scrollTime,
   header: {
     left: 'prevYear,prev,next,nextYear today',
     center: 'title',
@@ -242,8 +256,6 @@ var calendar = new Calendar(calendarEl, {
   }
 });
 calendar.render();
-
-var state = store.getState();
 
 store.subscribe(render);
 store.subscribe(persist);
