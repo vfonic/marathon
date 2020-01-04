@@ -1,3 +1,13 @@
+function addTask(arg) {
+  var title = prompt('Task:');
+  if (title) {
+    store.dispatch({
+      type: TASK_ADDED,
+      payload: { title, start: arg.start, end: arg.end, allDay: arg.allDay }
+    })
+  }
+}
+
 function emptyElement(element) {
   while(element.firstChild) { element.removeChild(element.firstChild); }
 }
@@ -33,9 +43,27 @@ function jsonParse(string) {
   return state;
 }
 
+Date.prototype.addHours = function(h) {
+  this.setTime(this.getTime() + (h*60*60*1000));
+  return this;
+}
+
 function initialState() {
   var state = jsonParse(localStorage.getItem('TASKS_MARATHON'));
-  return state || { tasks: [] };
+
+  if (!state) { return { tasks: [] }; }
+
+  var h = 0;
+  const DEFAULT_TASK_DURATION = 0.5;
+  state.tasks.forEach(task => {
+    if (task.isCompleted) { return; }
+
+    const newStart = new Date();
+    task.start = newStart.addHours(h);
+    task.end = new Date(task.start).addHours(DEFAULT_TASK_DURATION);
+    h += DEFAULT_TASK_DURATION
+  })
+  return state;
 }
 
 function uuid() {
@@ -98,12 +126,14 @@ function render(state) {
   emptyElement(containerEl);
 
   state.tasks.forEach(task => {
-    calendar.addEvent({
-      title: task.title,
-      start: task.start,
-      end: task.end,
-      allDay: task.allDay
-    })
+    if (!task.isCompleted) {
+      calendar.addEvent({
+        title: task.title,
+        start: task.start,
+        end: task.end,
+        allDay: task.allDay
+      })
+    }
 
 
     // <label for="for3" class='fc-event'>
@@ -119,6 +149,9 @@ function render(state) {
     })
     label.htmlFor = task.id;
     label.className = 'fc-event';
+    if (task.isCompleted) {
+      label.style = 'text-decoration: line-through';
+    }
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.name = task.id;
@@ -166,13 +199,7 @@ var calendar = new Calendar(calendarEl, {
   selectable: true,
   selectMirror: true,
   select: function(arg) {
-    var title = prompt('Task:');
-    if (title) {
-      store.dispatch({
-        type: TASK_ADDED,
-        payload: { title, start: arg.start, end: arg.end, allDay: arg.allDay }
-      })
-    }
+    addTask(arg)
     calendar.unselect()
   },
 });
