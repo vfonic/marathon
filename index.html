@@ -17,10 +17,12 @@
   <script src='packages/timegrid/main.js'></script>
   <script src='packages/list/main.js'></script>
   <link href='vendor/bootstrap.min.css' rel='stylesheet' />
-
 </head>
 <body>
   <div id='wrap'>
+    <div id="changelog">
+      <h2>Changelog</h2>
+    </div>
     <div id='external-events'>
       <h4>Tasks</h4>
 
@@ -34,12 +36,19 @@
     </div>
 
     <div id='calendar'></div>
-
-    <div style='clear:both'></div>
   </div>
 
   <link href='index.css' rel='stylesheet' />
   <script src='state-machine.js'></script>
   <script src='index.js'></script>
+  <script>
+    fetch('https://api.github.com/repos/vfonic/marathon/commits')
+      .then(r => r.json()).then(data => {
+        var commits = data.map(c => [new Date(c.commit.committer.date), c.commit.message]).slice(0, 10);
+        var div = document.getElementById('changelog');
+        var commitMessages = commits.map(([date, message]) => date.toLocaleString() + ' - ' + message);
+        div.innerHTML = div.innerHTML + commitMessages.join('<br/>')
+      })
+  </script>
 </body>
 </html>

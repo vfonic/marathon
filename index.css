@@ -2,12 +2,25 @@ body {
   margin-top: 40px;
 }
 #wrap {
-  width: 1100px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-areas:
+    "header header header"
+    "tasks-list calendar changelog"
+    "footer footer footer";
 }
 #external-events {
-  float: left;
-  width: 150px;
+  grid-area: tasks-list;
+}
+#calendar {
+  grid-area: calendar;
+}
+#changelog {
+  grid-area: changelog;
+}
+
+#external-events {
+  width: 250px;
+  margin: 0 auto;
   padding: 0 10px;
   border: 1px solid #ccc;
   box-shadow: 4px 4px 5px 0 #000;
@@ -39,7 +52,6 @@ body {
 }
 
 #calendar {
-  float: right;
   width: 900px;
 }
 
