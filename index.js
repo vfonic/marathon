@@ -13,17 +13,18 @@ function emptyElement(element) {
 }
 
 var Calendar = FullCalendar.Calendar;
-var Draggable = FullCalendarInteraction.Draggable
+// var Draggable = FullCalendarInteraction.Draggable
 
 var containerEl = document.getElementById('external-events-list');
-new Draggable(containerEl, {
-  itemSelector: '.fc-event',
-  eventData: function(eventEl) {
-    return {
-      title: eventEl.innerText.trim()
-    }
-  }
-});
+// new Draggable(containerEl, {
+//   itemSelector: '.fc-event',
+//   eventData: function(eventEl) {
+//     return {
+//       title: eventEl.innerText.trim(),
+//       duration: '00:30' // DEFAULT_TASK_DURATION
+//     }
+//   }
+// });
 
 const TASK_ADDED = 'TASK_ADDED';
 const TASK_MOVED = 'TASK_MOVED';
@@ -238,14 +239,16 @@ var calendar = new Calendar(calendarEl, {
   defaultView: 'timeGridDay',
   weekNumbers: false,
   navLinks: true, // can click day/week names to navigate views
-  droppable: true, // this allows things to be dropped onto the calendar
-  drop: function(arg) {
+
+  // droppable: true, // this allows things to be dropped onto the calendar
+  // drop: function(arg) {
     // is the "remove after drop" checkbox checked?
     // if (document.getElementById('drop-remove').checked) {
     //   // if so, remove the element from the "Draggable Events" list
     //   arg.draggedEl.parentNode.removeChild(arg.draggedEl);
     // }
-  },
+  // },
+
   editable: true,
   eventLimit: false, // allow "more" link when too many events
   selectable: true,
