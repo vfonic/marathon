@@ -1,5 +1,6 @@
 body {
   margin-top: 40px;
+  padding: 10px 20px;
 }
 #wrap {
   display: grid;
@@ -7,6 +8,7 @@ body {
     "header header header"
     "tasks-list calendar changelog"
     "footer footer footer";
+  grid-gap: 10px 20px;
 }
 #external-events {
   grid-area: tasks-list;
