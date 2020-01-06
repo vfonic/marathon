@@ -157,6 +157,7 @@ function render(state) {
     calendar.addEvent({
       title: task.title,
       start: task.start,
+      className: task.isCompleted ? 'is-completed' : '',
       end: task.end,
       allDay: task.allDay,
       extendedProps: task,
@@ -174,10 +175,7 @@ function render(state) {
       })
     })
     label.htmlFor = task.id;
-    label.className = 'fc-event';
-    if (task.isCompleted) {
-      label.style = 'text-decoration: line-through';
-    }
+    label.className = task.isCompleted ? 'fc-event is-completed' : 'fc-event';
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.name = task.id;
