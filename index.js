@@ -92,6 +92,7 @@ function removeTask(taskId, state) {
 function moveTask(taskData, state) {
   changeById(taskData.id, state, task => ({ ...task, ...taskData }))
   state.tasks.sort((a,b) => a.start.getTime() - b.start.getTime())
+  realignStart(state)
 }
 
 function completeTask(taskId, state) {
