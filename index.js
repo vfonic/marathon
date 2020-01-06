@@ -95,7 +95,8 @@ function moveTask(taskData, state) {
 }
 
 function completeTask(taskId, state) {
-  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted, end: new Date() }))
+  var end = new Date(); end.setSeconds(0,0);
+  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted, end }))
   realignStart(state)
 }
 
@@ -152,16 +153,13 @@ function render(state) {
   clearCompletedTasksButton.style.display = state.tasks.some(task => task.isCompleted) ? 'block' : 'none';
 
   state.tasks.forEach(task => {
-    if (!task.isCompleted) {
-      calendar.addEvent({
-        title: task.title,
-        start: task.start,
-        end: task.end,
-        allDay: task.allDay,
-        extendedProps: task,
-      })
-    }
-
+    calendar.addEvent({
+      title: task.title,
+      start: task.start,
+      end: task.end,
+      allDay: task.allDay,
+      extendedProps: task,
+    })
 
     // <label for="for3" class='fc-event'>
     //   <input type="checkbox" name="for3" id="for3">
