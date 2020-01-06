@@ -1,5 +1,4 @@
 body {
-  margin-top: 40px;
   padding: 10px 20px;
 }
 #wrap {
@@ -54,7 +53,8 @@ body {
 }
 
 #calendar {
-  width: 900px;
+  height: calc(100vh - 40px);
+  max-width: 900px;
 }
 
 [type="checkbox"] {
