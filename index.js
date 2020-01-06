@@ -40,6 +40,7 @@ function realignStart(state) {
     if (task.isCompleted) { return; }
 
     const newStart = new Date();
+    newStart.setSeconds(0,0);
     task.start = newStart.addHours(h);
     task.end = task.start.addHours(DEFAULT_TASK_DURATION);
     h += DEFAULT_TASK_DURATION
@@ -88,13 +89,9 @@ function removeTask(taskId, state) {
   state.tasks = state.tasks.filter(Boolean)
 }
 
-function moveTask(taskId, state) {
-  changeById(taskId, state, task => {
-    debugger;
-    // task.start
-    // task.end
-    return task;
-  })
+function moveTask(taskData, state) {
+  changeById(taskData.id, state, task => ({ ...task, ...taskData }))
+  state.tasks.sort((a,b) => a.start.getTime() - b.start.getTime())
 }
 
 function completeTask(taskId, state) {
@@ -123,7 +120,7 @@ function TasksCalendar(state, action) {
       newState.tasks = newState.tasks.filter(task => !task.isCompleted)
       return newState;
     case TASK_ADDED:
-      const start = action.payload.start || firstAvailableTime(state);
+      const start = action.payload.start || firstAvailableTime(newState);
       const end = action.payload.end || start.addHours(DEFAULT_TASK_DURATION);
       const newTask = Task({ ...action.payload, start, end });
       newState.tasks.push(newTask);
@@ -207,7 +204,7 @@ function render(state) {
 store = StateMachine(TasksCalendar);
 
 var state = store.getState();
-var firstTask = state.tasks.sort((a,b) => a.start < b.start).find(task => !task.isCompleted)
+var firstTask = state.tasks.sort((a, b) => a.start.getTime() - b.start.getTime()).find(task => !task.isCompleted)
 var firstTaskStart = firstTask ? firstTask.start : new Date();
 
 var beginningOfDay = new Date();
@@ -263,7 +260,41 @@ var calendar = new Calendar(calendarEl, {
       type: TASK_COMPLETED,
       payload: task.id,
     })
-  }
+  },
+
+  // delta - A Duration Object that represents the amount of time the event was moved by.
+  // el - The HTML element that was dragged.
+  // event - An Event Object that holds information about the event (date, title, etc) after the drop.
+  // jsEvent - The native JavaScript event with low-level information such as click coordinates.
+  // newResource - If the resource has changed, this is the Resource Object the event went to. If the resource has not changed, this will be undefined. For use with the resource plugins only.
+  // oldEvent - An Event Object that holds information about the event before the drop.
+  // oldResource - If the resource has changed, this is the Resource Object the event came from. If the resource has not changed, this will be undefined. For use with the resource plugins only.
+  // revert - A function that, if called, reverts the event’s start/end date to the values before the drag. This is useful if an ajax call should fail.
+  // view - The current View Object.
+  eventDrop: function(info) {
+    const event = info.event;
+    const task = event.extendedProps;
+    store.dispatch({
+      type: TASK_MOVED,
+      payload: { id: task.id, start: event.start, end: event.end },
+    })
+  },
+  // el - The HTML element that was being dragged.
+  // endDelta - A Duration Object that represents the amount of time the event’s end date was moved by.
+  // event - An Event Object that holds information about the event (date, title, etc) after the resize.
+  // jsEvent - The native JavaScript event with low-level information such as click coordinates.
+  // prevEvent - An Event Object that holds information about the event before the resize.
+  // revert - A function that, if called, reverts the event’s start/end date to the values before the drag. This is useful if an ajax call should fail.
+  // startDelta - A Duration Object that represents the amount of time the event’s start date was moved by.
+  // view - The current View Object.
+  eventResize: function(info) {
+    const event = info.event;
+    const task = event.extendedProps;
+    store.dispatch({
+      type: TASK_MOVED,
+      payload: { id: task.id, start: event.start, end: event.end },
+    })
+  },
 });
 calendar.render();
 
