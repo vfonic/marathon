@@ -96,8 +96,9 @@ function moveTask(taskData, state) {
 }
 
 function completeTask(taskId, state) {
+  var firstTask = state.tasks.find(task => !task.isCompleted);
   var end = new Date(); end.setSeconds(0,0);
-  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted, end }))
+  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted, end, start: firstTask.start }))
   realignStart(state)
 }
 
@@ -202,7 +203,8 @@ store = StateMachine(TasksCalendar);
 
 var state = store.getState();
 var firstTask = state.tasks.sort((a, b) => a.start.getTime() - b.start.getTime()).find(task => !task.isCompleted)
-var firstTaskStart = firstTask ? firstTask.start : new Date();
+var now = new Date(); now.setSeconds(0,0);
+var firstTaskStart = firstTask ? firstTask.start : now;
 
 var beginningOfDay = new Date();
 beginningOfDay.setHours(0,0,0,0);
