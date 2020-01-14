@@ -99,6 +99,15 @@ function completeTask(taskId, state) {
   var firstTask = state.tasks.find(task => !task.isCompleted);
   var end = new Date(); end.setSeconds(0,0);
   changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted, end, start: firstTask.start }))
+  state.tasks.sort((a,b) => {
+    if (a.isCompleted && !b.isCompleted) {
+      return -1;
+    }
+    if (!a.isCompleted && b.isCompleted) {
+      return 1;
+    }
+    return a.start.getTime() - b.start.getTime();
+  });
   realignStart(state)
 }
 
