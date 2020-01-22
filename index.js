@@ -96,9 +96,16 @@ function moveTask(taskData, state) {
 }
 
 function completeTask(taskId, state) {
-  var firstTask = state.tasks.find(task => !task.isCompleted);
-  var end = new Date(); end.setSeconds(0,0);
-  changeById(taskId, state, task => ({ ...task, isCompleted: !task.isCompleted, end, start: firstTask.start }))
+  changeById(taskId, state, task => {
+    // if task is completed, and we're putting it back, just mark it as not-completed
+    if (task.isCompleted) {
+      return { ...task, isCompleted: !task.isCompleted };
+    }
+
+    var firstTask = state.tasks.find(task => !task.isCompleted);
+    var end = new Date(); end.setSeconds(0,0);
+    return { ...task, isCompleted: !task.isCompleted, end, start: (firstTask && firstTask.start) || task.start }
+  });
   state.tasks.sort((a,b) => {
     if (a.isCompleted && !b.isCompleted) {
       return -1;
