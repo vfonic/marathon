@@ -15,7 +15,7 @@ function emptyElement(element) {
 var Calendar = FullCalendar.Calendar;
 // var Draggable = FullCalendarInteraction.Draggable
 
-var containerEl = document.getElementById('external-events-list');
+var containerEl = document.getElementById('tasks-list');
 // new Draggable(containerEl, {
 //   itemSelector: '.fc-event',
 //   eventData: function(eventEl) {

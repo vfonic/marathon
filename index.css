@@ -9,7 +9,7 @@ body {
     "footer footer footer";
   grid-gap: 10px 20px;
 }
-#external-events {
+#sidebar {
   grid-area: tasks-list;
 }
 #calendar {
@@ -19,7 +19,7 @@ body {
   grid-area: changelog;
 }
 
-#external-events {
+#sidebar {
   width: 250px;
   margin: 0 auto;
   padding: 0 10px;
@@ -28,25 +28,25 @@ body {
   background: #333;
 }
 
-#external-events h4 {
+#sidebar h4 {
   font-size: 16px;
   margin-top: 0;
   padding-top: 1em;
 }
 
-#external-events .fc-event {
+#sidebar .fc-event {
   margin: 10px 0;
   padding: 10px 20px;
   cursor: pointer;
 }
 
-#external-events p {
+#sidebar p {
   margin: 1.5em 0;
   font-size: 11px;
   color: #666;
 }
 
-#external-events input {
+#sidebar input {
   margin: 0;
   margin-right: 6px;
   vertical-align: middle;
