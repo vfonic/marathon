@@ -99,12 +99,16 @@ function completeTask(taskId, state) {
   changeById(taskId, state, task => {
     // if task is completed, and we're putting it back, just mark it as not-completed
     if (task.isCompleted) {
-      return { ...task, isCompleted: !task.isCompleted };
+      return { ...task, isCompleted: false };
     }
 
-    var firstTask = state.tasks.find(task => !task.isCompleted);
+    var firstTask = state.tasks.find(t => !t.isCompleted);
     var end = new Date(); end.setSeconds(0,0);
-    return { ...task, isCompleted: !task.isCompleted, end, start: (firstTask && firstTask.start) || task.start }
+    var start = task.start
+    if (start.getTime() > end.getTime()) {
+      start = end.addHours(-0.5)
+    }
+    return { ...task, isCompleted: true, end, start }
   });
   state.tasks.sort((a,b) => {
     if (a.isCompleted && !b.isCompleted) {
