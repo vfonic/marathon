@@ -10,13 +10,8 @@
   <link href='packages/timegrid/main.css' rel='stylesheet' />
   <link href='packages/daygrid/main.css' rel='stylesheet' />
   <link href='packages/list/main.css' rel='stylesheet' />
-  <script src='packages/core/main.js'></script>
-  <script src='packages/interaction/main.js'></script>
-  <script src='packages/bootstrap/main.js'></script>
-  <script src='packages/daygrid/main.js'></script>
-  <script src='packages/timegrid/main.js'></script>
-  <script src='packages/list/main.js'></script>
   <link href='vendor/bootstrap.min.css' rel='stylesheet' />
+  <link href='index.css' rel='stylesheet' />
 </head>
 <body>
   <div id='wrap'>
@@ -24,18 +19,93 @@
       <h2>Changelog</h2>
     </div>
     <div id='sidebar'>
+      <h4>Projects</h4>
+      <div id="projects-list"></div>
+      <button style='margin-bottom: 10px' data-toggle="modal" data-target="#addProjectModal">
+        Add project
+      </button>
+
+      <div style="margin-top: 40px"></div>
+
       <h4>Tasks</h4>
       <div id='tasks-list'></div>
       <button id='clear-completed-tasks-button' class='btn-primary' style='margin-bottom: 10px;font-size: 0.8em'>
         Clear completed
       </button>
-      <button id='add-task-button' style='margin-bottom: 10px'>Add task</button>
+      <button style='margin-bottom: 10px' data-toggle="modal" data-target="#addTaskModal">Add task</button>
     </div>
 
     <div id='calendar'></div>
   </div>
 
-  <link href='index.css' rel='stylesheet' />
+
+  <form id="add-project-form">
+    <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addProjectLabel">Add project</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="new_project_name">Project name</label>
+              <input type="text" class="form-control" id="new_project_name">
+            </div>
+            <div class="form-group">
+              <label for="new_project_color">Color</label>
+              <input type="text" class="form-control" id="new_project_color" style="max-width: 150px">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" id="add-project-button" class="btn btn-primary" data-dismiss="modal">Create project</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <form id="add-task-form">
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="AddTaskLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="AddTaskLabel">Add task</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="new_task_project">Project</label>
+              <select class="form-control" id="new_task_project">
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="new_task_name">Task name</label>
+              <input type="text" class="form-control" id="new_task_name">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" id="add-task-button" class="btn btn-primary" data-dismiss="modal">Create task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <script src='vendor/jquery-3.5.1.slim.min.js'></script>
+  <script src='vendor/bootstrap.min.js'></script>
+  <script src='packages/core/main.js'></script>
+  <script src='packages/interaction/main.js'></script>
+  <script src='packages/bootstrap/main.js'></script>
+  <script src='packages/daygrid/main.js'></script>
+  <script src='packages/timegrid/main.js'></script>
+  <script src='packages/list/main.js'></script>
   <script src='state-machine.js'></script>
   <script src='index.js'></script>
   <script>

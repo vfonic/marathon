@@ -8,6 +8,7 @@ body {
     "tasks-list calendar changelog"
     "footer footer footer";
   grid-gap: 10px 20px;
+  grid-template-columns: 1fr 4fr 2fr;
 }
 #sidebar {
   grid-area: tasks-list;
@@ -20,8 +21,7 @@ body {
 }
 
 #sidebar {
-  width: 250px;
-  margin: 0 auto;
+  min-width: 250px;
   padding: 0 10px;
   border: 1px solid #ccc;
   box-shadow: 4px 4px 5px 0 #000;
@@ -34,7 +34,9 @@ body {
   padding-top: 1em;
 }
 
-#sidebar .fc-event {
+#sidebar .item {
+  position: relative;
+  display: block;
   margin: 10px 0;
   padding: 10px 20px;
   cursor: pointer;
@@ -52,13 +54,9 @@ body {
   vertical-align: middle;
 }
 
-#calendar {
-  height: calc(100vh - 40px);
-  max-width: 900px;
-}
-
 .fc-event.is-completed,
-.is-completed .fc-title {
+.is-completed .fc-title,
+.item.is-completed {
   text-decoration: line-through;
   opacity: 0.7;
 }
@@ -83,4 +81,9 @@ label:hover .remove-task {
   visibility: visible;
   opacity: 1;
 }
-
+.modal-dialog {
+  color: #222;
+}
+.fc-event {
+  border: none;
+}

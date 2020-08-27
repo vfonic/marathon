@@ -1,13 +1,3 @@
-function addTask(arg) {
-  var title = prompt('Task:');
-  if (title) {
-    store.dispatch({
-      type: TASK_ADDED,
-      payload: { title, start: arg.start, end: arg.end, allDay: arg.allDay }
-    })
-  }
-}
-
 function emptyElement(element) {
   while(element.firstChild) { element.removeChild(element.firstChild); }
 }
@@ -15,8 +5,9 @@ function emptyElement(element) {
 var Calendar = FullCalendar.Calendar;
 // var Draggable = FullCalendarInteraction.Draggable
 
-var containerEl = document.getElementById('tasks-list');
-// new Draggable(containerEl, {
+var projectsContainerEl = document.getElementById('projects-list');
+var tasksContainerEl = document.getElementById('tasks-list');
+// new Draggable(tasksContainerEl, {
 //   itemSelector: '.fc-event',
 //   eventData: function(eventEl) {
 //     return {
@@ -26,6 +17,8 @@ var containerEl = document.getElementById('tasks-list');
 //   }
 // });
 
+const PROJECT_ADDED = 'PROJECT_ADDED';
+const PROJECT_REMOVED = 'PROJECT_REMOVED';
 const TASK_ADDED = 'TASK_ADDED';
 const TASK_MOVED = 'TASK_MOVED';
 const TASK_REMOVED = 'TASK_REMOVED';
@@ -67,7 +60,7 @@ Date.prototype.addHours = function(h) {
 function initialState() {
   var state = jsonParse(localStorage.getItem('TASKS_MARATHON'));
 
-  if (!state) { return { tasks: [] }; }
+  if (!state || !state.projects) { return { projects: [], tasks: [] }; }
 
   realignStart(state);
   return state;
@@ -80,13 +73,13 @@ function uuid() {
   });
 }
 
-function changeById(taskId, state, cb) {
-  state.tasks = state.tasks.map(task => task.id === taskId ? cb(task) : task);
+function changeById(taskId, state, cb, prop = 'tasks') {
+  state[prop] = state[prop].map(task => task.id === taskId ? cb(task) : task);
 }
 
-function removeTask(taskId, state) {
-  changeById(taskId, state, task => undefined);
-  state.tasks = state.tasks.filter(Boolean)
+function removeItem(taskId, state, prop = 'tasks') {
+  changeById(taskId, state, task => undefined, prop);
+  state[prop] = state[prop].filter(Boolean)
 }
 
 function moveTask(taskData, state) {
@@ -122,6 +115,9 @@ function completeTask(taskId, state) {
   realignStart(state)
 }
 
+function Project(props) {
+  return { id: uuid(), ...props }
+}
 function Task(props) {
   return { id: uuid(), isCompleted: false, ...props }
 }
@@ -139,6 +135,14 @@ function TasksCalendar(state, action) {
   var newState = jsonParse(JSON.stringify(state));
 
   switch (action.type) {
+    case PROJECT_ADDED:
+      newState.projects.push(Project(action.payload))
+      return newState
+    case PROJECT_REMOVED:
+      removeItem(action.payload, newState, 'projects')
+      return newState
+
+
     case CLEAR_COMPLETED:
       newState.tasks = newState.tasks.filter(task => !task.isCompleted)
       return newState;
@@ -149,7 +153,7 @@ function TasksCalendar(state, action) {
       newState.tasks.push(newTask);
       return newState;
     case TASK_REMOVED:
-      removeTask(action.payload, newState);
+      removeItem(action.payload, newState);
       return newState;
     case TASK_MOVED:
       moveTask(action.payload, newState);
@@ -168,11 +172,49 @@ function persist(state) {
 
 function render(state) {
   console.log(state);
+  var idToProject = {}
+  state.projects.forEach(project => idToProject[project.id] = project)
   calendar.removeAllEvents()
-  emptyElement(containerEl);
+  emptyElement(projectsContainerEl)
+  emptyElement(tasksContainerEl)
 
   const clearCompletedTasksButton = document.getElementById('clear-completed-tasks-button');
   clearCompletedTasksButton.style.display = state.tasks.some(task => task.isCompleted) ? 'block' : 'none';
+
+
+  var newTaskProjectDropdownEl = document.getElementById('new_task_project')
+  emptyElement(newTaskProjectDropdownEl)
+  const optionEl = document.createElement('option')
+  optionEl.innerText = 'Select project'
+  newTaskProjectDropdownEl.appendChild(optionEl)
+
+  state.projects.forEach(project => {
+    const label = document.createElement('label')
+    label.htmlFor = project.id
+    label.className = 'item'
+    label.style.backgroundColor = project.color
+    // label.style.opacity = 0.8
+
+    const span = document.createElement('span');
+    span.innerText = project.title;
+    label.appendChild(span)
+
+    const i = document.createElement('i');
+    i.className = "fa fa-trash remove-task";
+    i.addEventListener('click', function() {
+      store.dispatch({
+        type: PROJECT_REMOVED,
+        payload: project.id
+      });
+    })
+    label.appendChild(i)
+    projectsContainerEl.appendChild(label)
+
+    const optionEl = document.createElement('option')
+    optionEl.value = project.id
+    optionEl.innerText = project.title
+    newTaskProjectDropdownEl.appendChild(optionEl)
+  })
 
   state.tasks.forEach(task => {
     calendar.addEvent({
@@ -180,6 +222,7 @@ function render(state) {
       start: task.start,
       className: task.isCompleted ? 'is-completed' : '',
       end: task.end,
+      backgroundColor: idToProject[task.projectId].color,
       allDay: task.allDay,
       extendedProps: task,
     })
@@ -196,7 +239,8 @@ function render(state) {
       })
     })
     label.htmlFor = task.id;
-    label.className = task.isCompleted ? 'fc-event is-completed' : 'fc-event';
+    label.className = task.isCompleted ? 'item is-completed' : 'item';
+    label.style.backgroundColor = idToProject[task.projectId].color
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.name = task.id;
@@ -215,7 +259,7 @@ function render(state) {
       });
     })
     label.appendChild(i)
-    containerEl.appendChild(label);
+    tasksContainerEl.appendChild(label)
   })
 }
 
@@ -267,12 +311,11 @@ var calendar = new Calendar(calendarEl, {
 
   editable: true,
   eventLimit: false, // allow "more" link when too many events
-  selectable: true,
+  // selectable: true,
   selectMirror: true,
-  select: function(arg) {
-    addTask(arg)
-    calendar.unselect()
-  },
+  // select: function(arg) {
+  //   calendar.unselect()
+  // },
   eventClick: function(info) {
     const task = info.event.extendedProps;
     store.dispatch({
@@ -322,10 +365,59 @@ store.subscribe(persist);
 render(state);
 persist(state);
 
-const addTaskButton = document.getElementById('add-task-button');
-addTaskButton.addEventListener('click', addTask)
+
+const handleNewProjectSubmit = e => {
+  e.preventDefault()
+
+  $('#addProjectModal').modal('toggle')
+
+  const projectNameEl = document.getElementById('new_project_name')
+  const projectName = projectNameEl.value
+  projectNameEl.value = ''
+
+  const projectColorEl = document.getElementById('new_project_color')
+  const projectColor = projectColorEl.value
+  projectColorEl.value = ''
+
+  store.dispatch({
+    type: PROJECT_ADDED,
+    payload: { title: projectName, color: projectColor }
+  })
+}
+
+document.getElementById('add-project-form').addEventListener('submit', handleNewProjectSubmit)
+document.getElementById('add-project-button').addEventListener('click', handleNewProjectSubmit)
+
+const handleNewTaskSubmit = e => {
+  e.preventDefault()
+
+  $('#addTaskModal').modal('toggle')
+
+  const taskProjectEl = document.getElementById('new_task_project')
+  const taskProject = taskProjectEl.value
+  taskProjectEl.value = ''
+
+  const taskNameEl = document.getElementById('new_task_name')
+  const taskName = taskNameEl.value
+  taskNameEl.value = ''
+
+  store.dispatch({
+    type: TASK_ADDED,
+    payload: { title: taskName, projectId: taskProject }
+  })
+}
+
+document.getElementById('add-task-form').addEventListener('submit', handleNewTaskSubmit)
+document.getElementById('add-task-button').addEventListener('click', handleNewTaskSubmit)
 
 const clearCompletedTasksButton = document.getElementById('clear-completed-tasks-button');
 clearCompletedTasksButton.addEventListener('click', function() {
   store.dispatch({ type: CLEAR_COMPLETED })
+})
+
+$('#addTaskModal').on('shown.bs.modal', function (e) {
+  document.getElementById('new_task_project').focus()
+})
+$('#addProjectModal').on('shown.bs.modal', function (e) {
+  document.getElementById('new_project_name').focus()
 })
